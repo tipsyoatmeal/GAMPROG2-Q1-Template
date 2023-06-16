@@ -1,3 +1,4 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,34 +6,45 @@ using UnityEngine;
 public class CharacterControllerMovement : MonoBehaviour
 {
     [SerializeField]
-    private float moveSpeed = 2.0f;
+    private float speed = 5.0f;
     [SerializeField]
-    private float gravityScale = 1.0f;
-
-    private float gravity = -9.8f;
+    private float jumpForce = 20;
+    float velocity;
+    private Rigidbody rb;
 
     private CharacterController characterController;
+    private float xMove, zMove;
 
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
+        rb = GetComponent<Rigidbody>();
     }
 
     private void Update()
     {
-        Move();
+        //Get the input values from the player
+        xMove = Input.GetAxis("Horizontal");
+        zMove = Input.GetAxis("Vertical");
+        Jump();
     }
 
-    private void Move()
+    private void FixedUpdate()
     {
-       float xMove = Input.GetAxis("Horizontal");
-       float zMove = Input.GetAxis("Vertical");
+        //Change the velocity of our player
+        //rb.velocity = new Vector3(xMove, rb.velocity.y, zMove);
 
-        Vector3 moveDirection = (transform.right * xMove) + (transform.forward * zMove);
-        moveDirection.y += gravity * Time.deltaTime * gravityScale;
-        moveDirection *= moveSpeed * Time.deltaTime;
-       
-        //Debug.Log(moveDirection);
-        characterController.Move(moveDirection);
+        Vector3 movement = new Vector3(xMove, 0, zMove);
+        rb.MovePosition(transform.position + movement * Time.deltaTime * speed);
     }
+
+    private void Jump()
+    {
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            rb.AddForce(Vector3.up * speed * 50, ForceMode.Impulse);
+        }
+    }
+
+
 }

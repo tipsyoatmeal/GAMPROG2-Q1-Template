@@ -12,11 +12,30 @@ public class InventorySlot : MonoBehaviour
     {
         // TODO
         // Set the item data the and icons here
+        itemIcon.enabled = true;
+        itemIcon.sprite = data.icon;
+        itemData = data;
     }
 
     public void UseItem()
     {
-        InventoryManager.Instance.UseItem(itemData);
+        if(itemData.type == ItemType.Equipabble)
+        {
+            InventoryManager.Instance.UseItem(itemData);
+            itemData = null;
+            itemIcon.sprite = null;
+            itemIcon.enabled = false;
+        }
+        if(itemData.type == ItemType.Consumable)
+        {
+            InventoryManager.Instance.UseItem(itemData);
+            itemData = null;
+            itemIcon.sprite = null;
+            itemIcon.enabled = false;
+        }
+
+        
+
         // TODO
         // Reset the item data and the icons here
     }
@@ -24,5 +43,17 @@ public class InventorySlot : MonoBehaviour
     public bool HasItem()
     {
         return itemData != null;
+    }
+
+    public bool hasKey()
+    {
+        return itemData.type == ItemType.StoryItem;
+    }
+
+    public void DeleteKey()
+    {
+        itemIcon.gameObject.SetActive(false);
+        itemData=null;
+        itemIcon.sprite = null;
     }
 }

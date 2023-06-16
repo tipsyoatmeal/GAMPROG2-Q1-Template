@@ -10,13 +10,47 @@ public class RaycastController : MonoBehaviour
 
     [SerializeField]
     //The layer that will determine what the raycast will hit
-    LayerMask layerMask;
+    LayerMask layerMask, door;
     //The UI text component that will display the name of the interactable hit
     public TextMeshProUGUI interactionInfo;
 
     // Update is called once per frame
     private void Update()
     {
+        RaycastHit hit;
+        if(Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, raycastDistance, layerMask))
+        {
+            // do something that hits
+            interactionInfo.text = hit.transform.GetComponent<Item>().id;
+
+            //destroy when get
+            if(Input.GetKeyDown(KeyCode.E))
+            {
+                hit.transform.GetComponent<Item>().Interact();
+                Debug.Log("Destroyed");
+            }
+        }
+        else
+        {
+            interactionInfo.text = "";
+
+        }
+        if(Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, raycastDistance, door))
+        {
+            interactionInfo.text = hit.transform.GetComponent<Item>().id;
+            if(Input.GetKeyDown(KeyCode.E))
+            {
+                if(InventoryManager.Instance.KeyCheck() == true)
+                {
+                    hit.transform.gameObject.SetActive(false);
+                    InventoryManager.Instance.RemoveKey();
+                    Debug.Log("open");
+                }
+                Debug.Log("NoKey");
+            }
+            
+        }
+
         //TODO: Raycast
         //1. Perform a raycast originating from the gameobject's position towards its forward direction.
         //   Make sure that the raycast will only hit the layer specified in the layermask
